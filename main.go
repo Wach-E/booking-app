@@ -2,14 +2,20 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 const conferenceName string = "Wach Conference"
 const conferenceTickets uint = 100
 
 var remainingTickets uint = 100
-var bookings []string
+var bookings = make([]UserData, 0)
+
+type UserData struct {
+	firstName     string
+	lastName      string
+	email         string
+	ticketsBooked uint
+}
 
 func main() {
 
@@ -21,7 +27,7 @@ func main() {
 		isValidName, isValidEmail, isValidTicketNumber := validateUserInput(firstName, lastName, email, userTickets)
 
 		if isValidName && isValidEmail && isValidTicketNumber {
-			bookedUser(firstName, lastName, email, userTickets)
+			bookTicket(firstName, lastName, email, userTickets)
 
 			firstNames := getFirstNames()
 			fmt.Printf("These are the first name of the booked tickets %v\n", firstNames)
@@ -72,15 +78,23 @@ func getUserInput() (string, string, string, uint) {
 func getFirstNames() []string {
 	firstNames := []string{}
 	for _, booking := range bookings {
-		var names = strings.Fields(booking)
-		firstNames = append(firstNames, names[0])
+		firstNames = append(firstNames, booking.firstName)
 	}
 	return firstNames
 }
 
-func bookedUser(firstName string, lastName string, email string, userTickets uint) {
+func bookTicket(firstName string, lastName string, email string, userTickets uint) {
 	remainingTickets -= userTickets
-	bookings = append(bookings, firstName+" "+lastName)
+
+	var userData = UserData{
+		firstName:     firstName,
+		lastName:      lastName,
+		email:         email,
+		ticketsBooked: userTickets,
+	}
+
+	bookings = append(bookings, userData)
+	fmt.Printf("List of bookings is %v\n", bookings)
 
 	fmt.Printf("Thank you %v %v for booking %v tickets. You will get a confirmation sent to %v\n", firstName, lastName, userTickets, email)
 	fmt.Println("We'll be glad to see you there!")
